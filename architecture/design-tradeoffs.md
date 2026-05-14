@@ -1,53 +1,73 @@
 # Design Trade-offs
 
-This repository favors reliability-oriented architecture decisions over low-latency synchronous flows.
+This architecture favors operational safety and recoverability over minimum-latency synchronous execution.
 
-## 1) Async Queue Processing vs Sync Request Handling
+## 1) Fast ACK + Async Execution vs In-Request Processing
 
-**Decision:** Webhook ingress acknowledges quickly and defers heavy work to queues.
+**Decision:** acknowledge webhook traffic quickly and defer heavy work.
 
-**Why:** External webhook providers often enforce strict timeout windows. Queue decoupling improves reliability under bursts.
+**Why:** upstream systems use strict timeout windows and retry at-least-once.
 
-**Trade-off:** Added processing latency and eventual consistency.
+**Cost:** adds eventual consistency and queue latency.
 
-**Mitigation:** Keep queue latency visible (depth + age metrics) and prioritize time-sensitive job classes.
+**Mitigation:** track queue age SLOs, prioritize user-facing lanes, and expose backlog state in ops dashboards.
 
-## 2) Idempotent State Transitions vs Simpler Handlers
+## 2) Idempotent Checkpoints vs Simpler Stateless Handlers
 
-**Decision:** Every externally-triggered workflow uses a deterministic idempotency key.
+**Decision:** persist idempotency keys and transition checkpoints at side-effect boundaries.
 
-**Why:** At-least-once delivery semantics mean duplicates are normal, not exceptional.
+**Why:** worker crashes and replayed jobs are normal in distributed systems.
 
-**Trade-off:** Additional persistence checks and key lifecycle handling.
+**Cost:** more persistence operations and key lifecycle management.
 
-**Mitigation:** Use bounded idempotency windows and compact key schemas (e.g., `platform:eventId`).
+**Mitigation:** use bounded retention windows and compact key schemas tied to semantic events.
 
-## 3) Retry Safety vs Throughput
+## 3) Bounded Retry Budgets vs Aggressive Persistence
 
-**Decision:** Retries are bounded with backoff + jitter; non-retriable failures go directly to dead-letter.
+**Decision:** classify failures and enforce finite retries with jitter.
 
-**Why:** Unbounded retries can amplify outages and hide true failure modes.
+**Why:** unbounded retries amplify outages and hide poison jobs.
 
-**Trade-off:** Some jobs fail earlier instead of eventually succeeding after many attempts.
+**Cost:** some jobs fail earlier and require operator intervention.
 
-**Mitigation:** Separate transient vs permanent errors and alert on dead-letter growth.
+**Mitigation:** separate retryable/non-retryable/ambiguous outcomes, and maintain dead-letter triage tooling.
 
-## 4) Provider Abstraction vs Integration Simplicity
+## 4) Queue Lane Isolation vs Operational Simplicity
 
-**Decision:** AI orchestration is provider-agnostic with validation boundaries.
+**Decision:** split workload classes into separate queues and worker pools.
 
-**Why:** Allows fallback and controlled migration across providers.
+**Why:** isolates failure domains and protects high-priority lanes.
 
-**Trade-off:** More integration surface and normalization work.
+**Cost:** higher configuration and operational complexity.
 
-**Mitigation:** Keep common contract small (prompt input, output schema, error model).
+**Mitigation:** keep lane taxonomy small and map each lane to clear SLOs and ownership.
 
-## 5) Concurrency Limits vs Maximum Throughput
+## 5) Provider Abstraction vs Direct Provider Feature Access
 
-**Decision:** Workers run with explicit concurrency caps and queue-level throttles.
+**Decision:** enforce a normalized provider contract.
 
-**Why:** Protects downstream APIs, controls memory pressure, and reduces blast radius.
+**Why:** supports fallback, portability, and consistent safety validation.
 
-**Trade-off:** Throughput is intentionally bounded during peak load.
+**Cost:** abstraction overhead and slower adoption of provider-specific features.
 
-**Mitigation:** Scale worker replicas horizontally and tune concurrency by job type.
+**Mitigation:** preserve extension hooks while keeping core execution contract stable.
+
+## 6) Strict Concurrency Caps vs Peak Throughput
+
+**Decision:** cap concurrency per worker group and provider boundary.
+
+**Why:** limits blast radius, protects downstream systems, and controls spend.
+
+**Cost:** intentional throttling during surges.
+
+**Mitigation:** horizontal worker scaling, queue prioritization, and dynamic throttle tuning.
+
+## 7) Estimated Runtime Cost Guardrails vs Invoice-Lagged Truth
+
+**Decision:** use estimated per-lane spend for realtime controls; use delayed billing imports for reconciliation.
+
+**Why:** invoice truth arrives too late for runtime protection.
+
+**Cost:** estimated and billed values diverge in short windows.
+
+**Mitigation:** surface both values and track deltas as normal operational signals.

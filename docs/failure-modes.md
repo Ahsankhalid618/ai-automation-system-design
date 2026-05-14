@@ -1,73 +1,84 @@
 # Failure Modes and Mitigations
 
-This document captures realistic failure modes for queue-driven AI automation systems and the corresponding mitigation patterns.
+This document captures realistic failure modes in distributed AI automation systems and practical mitigations.
 
 ## 1) Duplicate Webhook Delivery
 
-**Failure mode:** Provider retries a webhook due to timeout or network uncertainty.
+**Failure mode:** upstream source retries the same event.
 
-**Risk:** Duplicate job execution and duplicate outbound messages.
-
-**Mitigation:**
-
-- deterministic idempotency key per incoming event
-- dedupe check before enqueue
-- idempotent state transitions in workers
-
-## 2) AI Provider Rate Limits or Throttling
-
-**Failure mode:** Provider returns `429` or temporary throttling errors.
-
-**Risk:** Retry storms and queue backlog growth.
+**Risk:** duplicate jobs and duplicate outbound actions.
 
 **Mitigation:**
 
-- concurrency caps per worker pool
-- bounded exponential backoff with jitter
-- rate-limit aware retry policy and alerting
+- ingress idempotency key check
+- dedupe-before-enqueue policy
+- delivery checkpoint guard on outbound side effects
 
-## 3) Worker Crash Mid-Execution
+## 2) Worker Crash After Partial Side Effects
 
-**Failure mode:** Worker process exits after side effects but before final ack.
+**Failure mode:** process exits after calling provider but before checkpoint/ack.
 
-**Risk:** Job replay with partial prior effects.
-
-**Mitigation:**
-
-- atomic write patterns for critical state transitions
-- idempotency checks at each side-effect boundary
-- at-least-once safe handlers
-
-## 4) Poison Jobs (Permanent Validation/Schema Failures)
-
-**Failure mode:** Payload is structurally invalid or violates invariant rules.
-
-**Risk:** Infinite retries and noisy operational signals.
+**Risk:** replay can send again or diverge state.
 
 **Mitigation:**
 
-- classify non-retriable errors early
+- checkpoint before irreversible actions where possible
+- claim and transition guards in worker execution
+- explicit `acceptance_unknown` class for ambiguous sends
+
+## 3) Provider Throttling and Timeouts
+
+**Failure mode:** `429`, timeout, or intermittent 5xx from provider.
+
+**Risk:** retry storms, queue growth, and stale responses.
+
+**Mitigation:**
+
+- bounded retry budgets with jitter
+- provider-aware backoff policies
+- lane-level throttling and fallback policy where safe
+
+## 4) Poison Jobs / Permanent Validation Errors
+
+**Failure mode:** malformed payload or invariant violation.
+
+**Risk:** infinite retries and noisy operations.
+
+**Mitigation:**
+
+- classify non-retryable errors early
 - route directly to dead-letter queue
-- expose dead-letter reasons for triage
+- expose dead-letter reason codes and triage status
 
 ## 5) Queue Backlog Saturation
 
-**Failure mode:** Ingress volume exceeds processing capacity for sustained periods.
+**Failure mode:** ingress volume exceeds sustained processing capacity.
 
-**Risk:** Increased processing latency and stale responses.
+**Risk:** high queue age and delayed user-visible actions.
 
 **Mitigation:**
 
-- monitor queue depth and oldest-job age
-- prioritize critical job classes
-- apply ingress throttling or load shedding
+- prioritize critical queues
+- apply ingress throttling/load shedding
+- scale worker replicas and adjust concurrency per lane
+
+## 6) Stale State Execution
+
+**Failure mode:** worker runs with outdated conversation/lead assumptions.
+
+**Risk:** invalid or unwanted automation behavior.
+
+**Mitigation:**
+
+- revalidate key runtime state at execution time
+- use state versioning or freshness guards
+- emit explicit `skipped_due_to_state_change` outcomes
 
 ## Minimum Operational Signals
 
-Keep these metrics visible at all times:
-
-- queue depth and queue age
-- retry rate by error class
-- dead-letter volume
-- worker saturation (active/concurrency cap)
-- provider latency and error ratio
+- queue depth and oldest-job age by lane
+- retries by error class and attempt index
+- dead-letter inflow and unresolved age
+- provider latency and error rate by class
+- delivered/skipped/deferred/failed outcome distribution
+- worker crash/restart frequency

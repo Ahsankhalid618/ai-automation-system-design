@@ -1,77 +1,66 @@
-# 📦 Queue Processing Architecture
+# Queue Processing
 
-The system uses queue-driven processing to improve scalability, reliability, and operational resilience.
+Queueing is the core control plane for asynchronous automation execution.
 
----
+## Why Queue-Driven Design
 
-# ⚡ Why Queue Processing?
+Synchronous webhook handling couples upstream latency to downstream AI and provider behavior. A queue boundary allows the system to:
 
-Direct synchronous processing creates problems such as:
+- acknowledge webhook deliveries quickly
+- absorb burst traffic without immediate overload
+- execute retries without blocking ingress
+- isolate failures by lane and error class
 
-- webhook timeouts
-- retry collisions
-- scaling bottlenecks
-- poor failure isolation
+## Queue Classes
 
-Queue systems decouple ingestion from execution.
+A production-style system usually separates queues by execution profile:
 
----
+- **conversation queue**: user-facing reply and delivery actions
+- **scheduler queue**: delayed follow-up and timed automation events
+- **recovery queue**: reconciliation and acceptance-unknown checks
+- **dead-letter queue**: terminal failures needing operator triage
 
-# 🔄 Queue Workflow
+## Worker Execution Contract
+
+Workers should process jobs with an explicit lifecycle:
+
+1. claim job with concurrency guard
+2. load execution context snapshot
+3. classify retryability and policy constraints
+4. execute bounded side effects
+5. checkpoint outcome with reason code
+6. ack, retry, or dead-letter
+
+## Queue-to-Worker Flow
 
 ```mermaid
 flowchart LR
-
-A[Webhook Event] --> B[Validation]
-
-B --> C[Queue Job Creation]
-
-C --> D[Redis Queue]
-
-D --> E[Worker Processing]
-
-E --> F[AI Orchestration]
-
-F --> G[Outbound Response]
-
-E --> H[Retry Logic]
-
-H --> D
+  A[Ingress Record] --> B[Queue Router]
+  B --> C[Queue Partition by Job Class]
+  C --> D[Worker Claim]
+  D --> E[Execution with Idempotency Guard]
+  E --> F{Outcome}
+  F -->|success| G[Checkpoint and Ack]
+  F -->|retryable| H[Requeue with Backoff]
+  F -->|terminal| I[Dead Letter Queue]
 ```
 
----
+## Concurrency and Backpressure
 
-# 🧠 Worker Responsibilities
+Concurrency is controlled at multiple levels:
 
-Workers handle:
+- queue-level max active jobs
+- worker process concurrency
+- provider call budgets per provider/model
+- per-tenant fairness caps when needed
 
-- conversation processing
-- AI generation
-- retry handling
-- rate limiting
-- workflow orchestration
-- delivery retries
+When pressure rises, the system should degrade predictably (delay/requeue/dead-letter) rather than produce silent drops.
 
----
+## Operational Signals
 
-# 🔁 Retry Strategy
-
-The architecture uses:
-- exponential backoff
-- dead-letter patterns
-- retry caps
-- idempotent execution
-
-This improves reliability under unstable conditions.
-
----
-
-# 📈 Scalability Benefits
-
-Queue-driven systems enable:
-
-- horizontal scaling
-- workload distribution
-- async processing
-- failure isolation
-- operational visibility
+- queue depth per lane
+- oldest-job age per lane
+- claim wait time
+- retries by error class
+- dead-letter inflow and unresolved age
+- worker saturation against configured caps

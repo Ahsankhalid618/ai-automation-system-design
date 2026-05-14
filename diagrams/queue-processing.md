@@ -1,36 +1,23 @@
-# 📦 Queue Processing Flow
+# Queue Processing Flow
 
 ```mermaid
 flowchart LR
+  A[Webhook Accepted] --> B[Normalize and Validate]
+  B --> C[Derive Idempotency Key]
+  C --> D{Already Processed?}
+  D -->|yes| E[No-op Ack]
+  D -->|no| F[Persist Ingest Intent]
+  F --> G[Enqueue Job]
 
-A[Webhook Received]
---> B[Validation]
+  G --> H[Worker Claim with Concurrency Cap]
+  H --> I[Execute with Side-effect Checkpoints]
+  I --> J{Result Class}
 
-B --> C[Deduplication Check]
+  J -->|success| K[Checkpoint and Ack]
+  J -->|retryable| L[Requeue with Backoff and Jitter]
+  J -->|acceptance_unknown| M[Recovery Queue]
+  J -->|terminal| N[Dead Letter Queue]
 
-C --> D[Job Creation]
-
-D --> E[Redis Queue]
-
-E --> F[Worker Concurrency Gate]
-
-F --> G[Conversation Worker]
-
-G --> H[Provider Rate Limit Check]
-
-H --> I[AI Processing]
-
-I --> J[Response Generation]
-
-J --> K[Delivery Service]
-
-G --> L[Retry Logic]
-
-L --> E
-
-L --> M{Retry Budget Exhausted?}
-
-M -->|Yes| N[Dead Letter Queue]
-
-G --> O[Structured Logging]
+  L --> G
+  M --> G
 ```

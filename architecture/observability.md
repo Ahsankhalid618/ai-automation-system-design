@@ -1,92 +1,67 @@
-# 📈 Observability & Monitoring
+# Observability
 
-Reliable automation systems require deep operational visibility into queues, workers, AI processing, and delivery pipelines.
+Operational observability in automation systems is about explainability, not just logs volume.
 
----
+## Production System Context
 
-# ⚡ Goals
+The observability conventions here are generalized from operating real AI automation runtimes (for example [AutoSetter](https://www.autosetter.ai)) and are intentionally abstracted to stay NDA-safe.
 
-The observability layer provides:
+## Observability Principles
 
-- worker visibility
-- queue monitoring
-- structured logging
-- retry tracking
-- failure analysis
-- operational diagnostics
+- every significant state transition has a reason code
+- every execution path has correlation ids
+- dashboards read from durable state and event logs
+- external monitoring is correlation radar, not source-of-truth business state
 
----
+## Truth Layers
 
-# 🌐 Monitoring Flow
+1. **Execution truth**: job events, transition checkpoints, provider outcomes
+2. **Operational truth**: queue health, worker saturation, retry/dead-letter trends
+3. **Cost truth**: realtime estimated spend and delayed billing reconciliation
+
+## Telemetry Flow
 
 ```mermaid
 flowchart LR
-
-A[Workers] --> B[Structured Logs]
-
-B --> C[Metrics Pipeline]
-
-C --> D[Monitoring Dashboard]
-
-A --> E[Failure Tracking]
-
-E --> D
-
-A --> F[Queue Metrics]
-
-F --> D
+  A[Ingress and Workers] --> B[Structured Events]
+  B --> C[Metrics and Aggregations]
+  C --> D[Operations Dashboard]
+  A --> E[Alert Policies]
+  E --> D
 ```
 
----
+## Minimum Dashboard Views
 
-# 🧠 Key Monitoring Areas
+- queue depth, age, and retry pressure by lane
+- worker claim latency and saturation
+- outcome breakdown (delivered, skipped, deferred, failed)
+- dead-letter backlog and oldest unresolved age
+- provider latency/error class and fallback rates
+- estimated cost by lane and organization
 
-## Queue Monitoring
-Tracks:
-- queue latency
-- retry counts
-- failed jobs
-- worker throughput
-- backlog pressure
+## Logging Policy
 
----
+Log structured metadata and reason codes. Avoid sending raw sensitive payloads to external telemetry systems.
 
-## AI Processing Metrics
-Measures:
-- response latency
-- provider reliability
-- token usage
-- orchestration failures
-- processing duration
+Prefer:
 
----
+- ids and correlation keys
+- enum reason codes
+- durations and counters
+- lane and queue names
 
-## Worker Health
-Monitors:
-- worker crashes
-- memory usage
-- processing failures
-- concurrency bottlenecks
+Avoid:
 
----
+- raw message content
+- prompts or provider request bodies
+- signed URLs, tokens, secrets, or customer PII
 
-# 🔄 Reliability Engineering
+## Alerting Guidance
 
-The system includes:
-- retry visibility
-- dead-letter handling
-- structured event logging
-- error categorization
-- operational tracing
+Alert on sustained operational risk, not single noisy events:
 
----
-
-# 🚀 Production Engineering Goals
-
-The architecture prioritizes:
-
-- operational resilience
-- fault isolation
-- scalability
-- monitoring visibility
-- production stability
+- oldest-job age breaches
+- dead-letter growth acceleration
+- retryable error ratio spikes
+- provider outage thresholds
+- worker crash loops

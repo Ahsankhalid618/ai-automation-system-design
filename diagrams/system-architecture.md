@@ -1,71 +1,67 @@
-# 🏗️ System Architecture Diagram
+# System Architecture Diagram
 
 ```mermaid
 flowchart TD
+  subgraph External
+    A[Webhook Providers]
+  end
 
-subgraph External Systems
-A[Instagram / External APIs]
-B[Webhook Events]
-end
+  subgraph Ingress
+    B[Ingress API]
+    C[Validation and Signature Checks]
+    D[Idempotency and Deduplication]
+    E[Durable Ingest Intent]
+  end
 
-subgraph Ingestion Layer
-C[Ingress API]
-D[Validation Layer]
-E[Deduplication]
-end
+  subgraph Queue Layer
+    F[Queue Router]
+    G1[Conversation Queue]
+    G2[Scheduler Queue]
+    G3[Recovery Queue]
+    GX[Dead Letter Queue]
+  end
 
-subgraph Queue Infrastructure
-F[BullMQ Queue]
-G[Redis]
-R[Dead Letter Queue]
-end
+  subgraph Worker Layer
+    H1[Conversation Workers]
+    H2[Scheduler Workers]
+    H3[Recovery Workers]
+    HC[Concurrency and Claim Guard]
+  end
 
-subgraph Worker System
-H[Conversation Workers]
-I[Retry Workers]
-J[Scheduler Workers]
-S[Concurrency Controls]
-end
+  subgraph AI Runtime
+    I[Runtime Coordinator]
+    J[Provider Adapter]
+    K[Response Contract Validator]
+  end
 
-subgraph AI Layer
-K[AI Orchestrator]
-L[Prompt Builder]
-M[Provider Routing]
-N[OpenAI / Gemini]
-T[Provider Rate Limit Guard]
-end
+  subgraph Delivery
+    L[Delivery Guardrail Check]
+    M[Outbound Delivery]
+  end
 
-subgraph Persistence
-O[(PostgreSQL)]
-end
+  subgraph Persistence and Ops
+    N[(PostgreSQL)]
+    O[(Job Event Log)]
+    P[Ops Dashboard and Alerts]
+  end
 
-subgraph Observability
-P[Structured Logs]
-Q[Metrics & Monitoring]
-end
+  A --> B
+  B --> C --> D --> E --> F
+  F --> G1 --> HC --> H1
+  F --> G2 --> HC --> H2
+  F --> G3 --> HC --> H3
 
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
+  H1 --> I --> J --> K --> L --> M
+  H1 --> O
+  H2 --> O
+  H3 --> O
 
-F --> H
-F --> I
-F --> J
-F --> S
+  L --> N
+  M --> N
+  O --> P
+  N --> P
 
-H --> K
-K --> L
-L --> M
-M --> T
-T --> N
-
-H --> O
-K --> O
-
-H --> P
-P --> Q
-
-I --> R
+  H1 --> GX
+  H2 --> GX
+  H3 --> GX
 ```

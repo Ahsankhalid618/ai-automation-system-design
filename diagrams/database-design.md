@@ -1,41 +1,70 @@
-# 🗄️ Database Relationships
+# Database Relationships
 
 ```mermaid
 erDiagram
+  ORGANIZATIONS ||--o{ LEADS : owns
+  LEADS ||--o{ CONVERSATIONS : contains
+  CONVERSATIONS ||--o{ MESSAGES : stores
+  CONVERSATIONS ||--o{ JOBS : triggers
+  JOBS ||--o{ JOB_EVENTS : emits
+  CONVERSATIONS ||--o{ IDEMPOTENCY_KEYS : dedupe_scope
+  LEADS ||--o{ AUTOMATION_STATES : controls
 
-USERS ||--o{ ORGANIZATIONS : belongs_to
-ORGANIZATIONS ||--o{ LEADS : manages
-LEADS ||--o{ CONVERSATIONS : contains
-CONVERSATIONS ||--o{ MESSAGES : stores
-CONVERSATIONS ||--o{ JOBS : processes
+  ORGANIZATIONS {
+    uuid id
+    string name
+  }
 
-USERS {
-  uuid id
-  string email
-}
+  LEADS {
+    uuid id
+    uuid organization_id
+    string external_ref
+    string status
+  }
 
-ORGANIZATIONS {
-  uuid id
-  string name
-}
+  CONVERSATIONS {
+    uuid id
+    uuid lead_id
+    string channel
+    string state
+  }
 
-LEADS {
-  uuid id
-  string status
-}
+  MESSAGES {
+    uuid id
+    uuid conversation_id
+    string direction
+    text content
+    timestamp created_at
+  }
 
-CONVERSATIONS {
-  uuid id
-  string platform
-}
+  JOBS {
+    uuid id
+    string job_type
+    string status
+    int attempt_count
+    timestamp scheduled_at
+  }
 
-MESSAGES {
-  uuid id
-  text content
-}
+  JOB_EVENTS {
+    uuid id
+    uuid job_id
+    string outcome_code
+    text reason
+    timestamp created_at
+  }
 
-JOBS {
-  uuid id
-  string status
-}
+  IDEMPOTENCY_KEYS {
+    uuid id
+    string key
+    string scope
+    timestamp expires_at
+  }
+
+  AUTOMATION_STATES {
+    uuid id
+    uuid lead_id
+    string mode
+    boolean paused
+    timestamp updated_at
+  }
 ```

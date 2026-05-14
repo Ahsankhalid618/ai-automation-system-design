@@ -1,24 +1,22 @@
-# 🧠 AI Orchestration Flow
+# AI Orchestration Flow
 
 ```mermaid
 flowchart TD
+  A[Claimed Job] --> B[Load Conversation and Lead Snapshot]
+  B --> C[Compile Runtime Context]
+  C --> D[Build Provider-agnostic Request]
+  D --> E[Provider Routing Strategy]
+  E --> F[Primary Provider Call]
+  F --> G{Provider Outcome}
 
-A[Conversation Event]
---> B[Context Retrieval]
+  G -->|success| H[Output Validation]
+  G -->|retryable failure| I[Retry Classification]
+  G -->|ambiguous| J[Acceptance Unknown Path]
 
-B --> C[Prompt Builder]
+  H --> K{Policy Check Passes?}
+  K -->|yes| L[Delivery Candidate]
+  K -->|no| M[Skipped or Deferred Outcome]
 
-C --> D[AI Orchestrator]
-
-D --> E[Provider Selection]
-
-E --> F[OpenAI / Gemini]
-
-F --> G[Response Validation]
-
-G --> H[Safety Checks]
-
-H --> I[Post Processing]
-
-I --> J[Final Delivery]
+  I --> N[Backoff Schedule]
+  J --> O[Recovery Workflow]
 ```

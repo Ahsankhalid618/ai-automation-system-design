@@ -3,6 +3,7 @@ type RetryOptions = {
   baseDelayMs?: number;
   maxDelayMs?: number;
   shouldRetry?: (error: unknown) => boolean;
+  onAttempt?: (attempt: number, delayMs: number, error: unknown) => void;
 };
 
 type RetryableError = Error & {
@@ -14,8 +15,8 @@ type RetryableError = Error & {
 const sleep = (delayMs: number) =>
   new Promise((resolve) => setTimeout(resolve, delayMs));
 
-const withFullJitter = (maxDelayMs: number) =>
-  Math.floor(Math.random() * maxDelayMs);
+const withFullJitter = (capDelayMs: number) =>
+  Math.floor(Math.random() * capDelayMs);
 
 export function isRetryableError(error: unknown): boolean {
   const candidate = error as RetryableError | undefined;
@@ -28,7 +29,7 @@ export function isRetryableError(error: unknown): boolean {
     return true;
   }
 
-  if (candidate.status === 429) {
+  if (candidate.status === 429 || candidate.status === 503) {
     return true;
   }
 
@@ -46,6 +47,7 @@ export async function retryWithBackoff<T>(
     baseDelayMs = 250,
     maxDelayMs = 5_000,
     shouldRetry = isRetryableError,
+    onAttempt,
   } = options;
 
   let attempt = 0;
@@ -55,22 +57,28 @@ export async function retryWithBackoff<T>(
       return await operation();
     } catch (error) {
       attempt += 1;
-      const canRetry = attempt <= maxRetries && shouldRetry(error);
 
-      if (!canRetry) {
+      const withinBudget = attempt <= maxRetries;
+      const retryable = shouldRetry(error);
+
+      if (!withinBudget || !retryable) {
         throw error;
       }
 
-      // Exponential backoff with full jitter prevents retry stampedes.
       const exponentialCap = Math.min(
         maxDelayMs,
         baseDelayMs * Math.pow(2, attempt)
       );
       const delayMs = withFullJitter(exponentialCap);
 
-      console.warn(
-        `retrying operation attempt=${attempt} delayMs=${delayMs}`
-      );
+      onAttempt?.(attempt, delayMs, error);
+
+      console.warn("retry_attempt", {
+        attempt,
+        maxRetries,
+        delayMs,
+      });
+
       await sleep(delayMs);
     }
   }

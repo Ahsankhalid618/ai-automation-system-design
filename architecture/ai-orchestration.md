@@ -1,104 +1,53 @@
-# 🧠 AI Orchestration Architecture
+# AI Orchestration
 
-This document explains the orchestration layer responsible for managing AI-driven workflows, prompt execution, and conversation processing.
+The AI orchestration layer coordinates context, provider execution, and response safety checks. It does not own queueing, persistence, or delivery policy.
 
----
+## Orchestration Responsibilities
 
-# ⚡ Purpose of the Orchestration Layer
+- compile deterministic context for each execution
+- map runtime lane to provider strategy
+- invoke provider adapters through a normalized contract
+- validate model output before it can trigger side effects
+- emit explicit reason codes for failures and skips
 
-The orchestration layer separates AI logic from infrastructure concerns and provides:
-
-- prompt lifecycle management
-- context assembly
-- provider routing
-- response validation
-- conversation state management
-- retry-safe execution
-
----
-
-# 🌐 AI Processing Flow
+## Runtime Coordination Pattern
 
 ```mermaid
 flowchart TD
-
-A[Conversation Event] --> B[Context Assembly]
-
-B --> C[Prompt Builder]
-
-C --> D[AI Orchestrator]
-
-D --> E[Provider Selection]
-
-E --> F[AI Provider]
-
-F --> G[Response Validation]
-
-G --> H[Safety Checks]
-
-H --> I[Post Processing]
-
-I --> J[Outbound Delivery]
+  A[Claimed Job] --> B[Context Compiler]
+  B --> C[Instruction and Constraint Builder]
+  C --> D[Orchestrator]
+  D --> E[Provider Router]
+  E --> F[Provider Adapter]
+  F --> G[Output Contract Validation]
+  G --> H{Valid and Safe?}
+  H -->|yes| I[Delivery Candidate]
+  H -->|no| J[Retry or Terminal Classification]
 ```
 
----
+## Provider Abstraction Contract
 
-# 🧩 Core Components
+A practical abstraction stays small and explicit:
 
-## Context Assembly
-Responsible for:
-- conversation history
-- lead state
-- automation context
-- memory retrieval
-- workflow state
+- input envelope (messages, metadata, limits)
+- output schema (text/tool actions/structured fields)
+- error model (retryable, non-retryable, ambiguous)
+- telemetry envelope (latency, token usage, request id)
 
----
+## Reliability Concerns
 
-## Prompt Builder
-Handles:
-- structured prompt generation
-- template composition
-- AI instructions
-- contextual augmentation
+- provider timeouts can be acceptance-unknown states
+- retries must not create duplicate outbound actions
+- fallbacks should preserve output contract compatibility
+- policy checks run after generation, before delivery
 
----
+## Conversation and Lead State Coordination
 
-## Provider Routing
-Supports:
-- fallback providers
-- latency optimization
-- cost-aware routing
-- provider abstraction
+A job should execute from a persisted state snapshot, not from UI assumptions. Conversation state, lead state, and automation mode should be revalidated at execution time to prevent stale side effects.
 
----
+## Cost and Throughput Controls
 
-## Response Validation
-Ensures:
-- valid outputs
-- workflow safety
-- structured formatting
-- retry-safe responses
-
----
-
-# 🔄 Reliability Patterns
-
-The orchestration layer is designed around:
-
-- idempotent execution
-- retry-safe workflows
-- queue isolation
-- async processing
-- state consistency
-
----
-
-# 📈 Scalability Considerations
-
-The architecture supports:
-- multiple AI providers
-- distributed workers
-- queue-based execution
-- provider failover
-- horizontal scaling
+- cap max attempts per orchestration run
+- bound model tokens and tool steps per job
+- track estimated spend by lane for operational guardrails
+- separate realtime estimated cost from delayed billing reconciliation

@@ -1,101 +1,70 @@
-# 🏗️ System Overview
+# System Overview
 
-This document explains the high-level architecture behind the AI automation platform.
+This architecture models a production-style AI automation backend for event-driven messaging workflows.
 
----
+It is optimized for reliability under at-least-once delivery, provider variability, and distributed worker execution.
 
-# ⚡ Core Goals
+## Production System Context
 
-The system is designed around:
+The patterns in this document are generalized from real AI automation operations, including public product context from [AutoSetter](https://www.autosetter.ai), and intentionally exclude proprietary implementation details.
 
-- Scalability
-- Reliability
-- Queue-driven processing
-- AI orchestration
-- Failure isolation
-- Operational visibility
-- Distributed workloads
+## System Objectives
 
----
+- acknowledge inbound webhooks quickly
+- make async execution recoverable after partial failures
+- keep side effects idempotent across retries
+- enforce clear ownership boundaries between lanes
+- expose operational truth through queryable state and reason-coded events
 
-# 🌐 High-Level Architecture
+## Runtime Boundaries
+
+- **Ingress boundary**: validates, normalizes, records durable ingest intent, and returns fast acknowledgement.
+- **Queue boundary**: separates external delivery cadence from internal execution cadence.
+- **Worker boundary**: executes jobs with explicit concurrency and claim semantics.
+- **AI runtime boundary**: compiles context, selects provider strategy, validates outputs.
+- **Delivery boundary**: performs final policy checks before outbound side effects.
+- **Observability boundary**: emits structured events for every state transition and decision.
+
+## Execution Flow
 
 ```mermaid
 flowchart TD
+  A[External Events] --> B[Ingress API]
+  B --> C[Schema and Auth Validation]
+  C --> D[Idempotency Ledger Check]
+  D --> E[Durable Ingest Record]
+  E --> F[Queue Router]
 
-A[External Webhooks] --> B[Ingress API]
+  F --> G1[Conversation Worker Pool]
+  F --> G2[Follow-up Scheduler Pool]
+  F --> G3[Recovery and Retry Pool]
 
-B --> C[Validation Layer]
+  G1 --> H[AI Runtime Coordinator]
+  H --> I[Provider Adapter Layer]
+  I --> J[Response Contract Validation]
+  J --> K[Delivery Policy Gate]
 
-C --> D[Deduplication Layer]
+  K --> L[(State Store)]
+  G1 --> M[(Job Event Log)]
+  G2 --> M
+  G3 --> M
 
-D --> E[Queue System]
-
-E --> F[Conversation Workers]
-
-F --> G[AI Orchestrator]
-
-G --> H[Prompt Builder]
-
-H --> I[AI Provider]
-
-I --> J[Response Validation]
-
-J --> K[Outbound Delivery]
-
-F --> L[Logging & Metrics]
-
-L --> M[Observability Dashboard]
+  M --> N[Operations Dashboard]
+  L --> N
 ```
 
----
+## Operational Assumptions
 
-# 📦 Core Components
+- upstream webhook sources may retry aggressively
+- queue processing is at-least-once, not exactly-once
+- provider calls can fail with ambiguous outcomes (timeout, 429, 5xx)
+- workers can crash after partial side effects
+- system behavior must remain auditable per lead/conversation/job
 
-## Webhook Ingestion Layer
-Responsible for:
-- receiving external events
-- request validation
-- deduplication
-- event normalization
+## Failure Domain Strategy
 
----
-
-## Queue System
-Handles:
-- asynchronous processing
-- retry management
-- failure isolation
-- rate limiting
-- concurrency control
-
----
-
-## AI Orchestration Layer
-Responsible for:
-- prompt generation
-- context assembly
-- provider routing
-- response validation
-- conversation state handling
-
----
-
-## Worker Layer
-Workers independently process:
-- conversations
-- automation workflows
-- retries
-- scheduled tasks
-
-This enables horizontal scaling across workloads.
-
----
-
-## Observability Layer
-Provides:
-- structured logging
-- worker metrics
-- failure tracking
-- queue monitoring
-- operational visibility
+- isolate queue lanes by workload type and urgency
+- route non-retriable payloads directly to dead-letter triage
+- keep retry budgets finite to prevent retry storms
+- prioritize forward progress over strict low-latency sync execution
+- preserve operator intervention paths for ambiguous delivery states
