@@ -1,22 +1,21 @@
-# AI Automation System Design
+<p align="center">
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=260&color=0:020617,25:0F172A,50:1E1B4B,75:312E81,100:06B6D4&text=AI%20Automation%20System%20Design&fontSize=42&fontColor=ffffff&fontAlignY=38&animation=fadeIn&desc=Queue-Driven%20AI%20Infrastructure%20•%20Distributed%20Systems%20•%20Reliability%20Patterns&descAlignY=58&descSize=18"/>
+</p>
 
-![AI Automation System Design Banner](https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,100:1E293B&height=220&section=header&text=AI%20Automation%20System%20Design&fontSize=38&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Queue-Driven%20AI%20Infrastructure%20%7C%20Distributed%20Systems%20Thinking%20%7C%20Reliability%20Patterns&descAlignY=62&descSize=16)
+<p align="center">
+  <img src="https://img.shields.io/badge/Architecture-Showcase-06B6D4?style=for-the-badge&logo=icloud&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Distributed-Systems-8B5CF6?style=for-the-badge&logo=matrix&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Queue-Driven-EA580C?style=for-the-badge&logo=apachekafka&logoColor=white"/>
+  <img src="https://img.shields.io/badge/AI-Orchestration-2563EB?style=for-the-badge&logo=openai&logoColor=white"/>
+</p>
 
-Production-inspired architecture showcase for queue-driven AI automation systems.
+<p align="center">
+  Production-inspired architecture showcase for scalable AI-native automation systems.
+</p>
 
-![Architecture Showcase](https://img.shields.io/badge/Architecture-Showcase-0F172A?style=for-the-badge)
-![Focus Distributed Systems](https://img.shields.io/badge/Focus-Distributed%20Systems-1E293B?style=for-the-badge)
-![Pattern Queue Driven](https://img.shields.io/badge/Pattern-Queue%20Driven-334155?style=for-the-badge)
-![Reliability Idempotent Retries](https://img.shields.io/badge/Reliability-Idempotent%20Retries-475569?style=for-the-badge)
+---
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
-![BullMQ](https://img.shields.io/badge/BullMQ-EA580C?style=flat-square)
-![OpenAI and Gemini](https://img.shields.io/badge/OpenAI%20%7C%20Gemini-AI%20Providers-111827?style=flat-square)
-
-## Overview
+# 🧠 Overview
 
 This repository demonstrates how to design reliable AI-enabled backend workflows with:
 
@@ -28,125 +27,192 @@ This repository demonstrates how to design reliable AI-enabled backend workflows
 
 The focus is architecture and systems thinking, not a full application build. All patterns are generalized and NDA-safe.
 
-## Quick Navigation
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=ts,nodejs,postgres,redis,docker,nextjs" />
+</p>
 
-- [Product UI Snapshots (NDA-Safe)](#product-ui-snapshots-nda-safe)
-- [Architecture at a Glance](#architecture-at-a-glance)
-- [Operational Constraints](#operational-constraints)
-- [Design Trade-offs](#design-trade-offs)
-- [Reliability and Failure Handling](#reliability-and-failure-handling)
-- [Implementation Examples](#implementation-examples)
-- [How to Review This Repo Quickly](#how-to-review-this-repo-quickly)
+<p align="center">
+  <img src="https://img.shields.io/badge/BullMQ-Queue%20Infrastructure-f97316?style=flat-square"/>
+  <img src="https://img.shields.io/badge/OpenAI%20%7C%20Gemini-Provider%20Orchestration-111827?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Fly.io-Distributed%20Deployment-8B5CF6?style=flat-square"/>
+</p>
 
-## Product UI Snapshots (NDA-Safe)
+<p align="center">
+  <img src="https://img.shields.io/badge/Retry--Safe-Workflows-0EA5E9?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Idempotent-Processing-14B8A6?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Dead--Letter-Queues-7C3AED?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Operational-Observability-2563EB?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Provider-Agnostic%20AI-1D4ED8?style=flat-square"/>
+</p>
 
-These screenshots are included to provide product context for the architecture patterns in this repository.
-All examples are redacted or sanitized to avoid exposing private customer data, internal credentials, or proprietary business metrics.
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-### 📸 Operational Dashboard Preview
+# ⚡ Quick Navigation
 
-![Autosetter Operational Dashboard](./assets/images/Autosetter-Dashboard.png)
+- [📸 Product UI Snapshots](#-product-ui-snapshots-nda-safe)
+- [🏗️ Architecture at a Glance](#️-architecture-at-a-glance)
+- [⚙️ Operational Constraints](#️-operational-constraints)
+- [⚖️ Design Trade-offs](#️-design-trade-offs)
+- [🛡️ Reliability and Failure Handling](#️-reliability-and-failure-handling)
+- [🧩 Implementation Examples](#-implementation-examples)
+- [📂 Repository Structure](#-repository-structure)
+- [🚀 Stack](#-stack)
 
-Production-inspired operational control center demonstrating:
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-- queue monitoring
-- operational budgeting
-- AI workflow orchestration
-- runtime visibility
-- alerting systems
-- automation infrastructure controls
+# 📸 Product UI Snapshots (NDA-Safe)
 
-> Sensitive operational data has been intentionally blurred for privacy and NDA-safe public showcasing.
+These screenshots provide product context for the architecture patterns demonstrated in this repository.
 
-### 📸 Queue & Runtime Monitoring
+All examples are intentionally sanitized and blurred to avoid exposing:
+- customer information
+- operational metrics
+- internal credentials
+- proprietary business logic
 
-![Jobs Queue Processing](./assets/images/Jobs-queue-processing.png)
+## 🖥️ Operational Dashboard Preview
 
-Production-inspired queue orchestration and runtime diagnostics interface for monitoring:
+<p align="center">
+  <img width="100%" src="./assets/images/Autosetter-Dashboard.png"/>
+</p>
 
-- worker execution
-- retry states
-- failed jobs
-- queue health
-- operational visibility
-- runtime tracing
+<p align="center">
+  <i>
+    Operational control center for AI workflow orchestration, runtime visibility, queue monitoring, infrastructure governance, and alerting systems.
+  </i>
+</p>
 
-> Sensitive identifiers and operational data have been intentionally blurred for privacy and NDA-safe public showcasing.
+---
 
-## Architecture at a Glance
+## 📦 Queue & Runtime Monitoring
 
-Core flow:
+<p align="center">
+  <img width="100%" src="./assets/images/Jobs-queue-processing.png"/>
+</p>
 
-1. Ingest webhook events and acknowledge quickly.
-2. Validate and deduplicate by idempotency key.
-3. Enqueue normalized jobs for async processing.
-4. Process with worker concurrency limits and retry policy.
-5. Route through AI orchestration and response validation.
-6. Deliver results and persist state transitions.
-7. Emit structured telemetry for queue, worker, and provider behavior.
+<p align="center">
+  <i>
+    Queue orchestration and runtime diagnostics interface for monitoring worker execution, retries, failures, queue health, and operational visibility.
+  </i>
+</p>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
+
+# 🏗️ Architecture at a Glance
+
+Core workflow:
+
+1. Ingest webhook events and acknowledge quickly
+2. Validate and deduplicate with idempotency keys
+3. Enqueue normalized jobs for async processing
+4. Process workloads with bounded worker concurrency
+5. Route requests through AI orchestration layers
+6. Validate responses and persist state transitions
+7. Emit structured telemetry for observability
 
 ```mermaid
 flowchart TD
-A[External Webhooks] --> B[Ingress API]
+
+A[External Webhooks]
+--> B[Ingress API]
+
 B --> C[Validation + Idempotency Check]
+
 C --> D[Queue - BullMQ / Redis]
+
 D --> E[Worker Pool]
+
 E --> F[AI Orchestrator]
+
 F --> G[Provider Call]
+
 G --> H[Response Validation]
+
 H --> I[Delivery + Persistence]
+
 E --> J[Metrics + Logs]
 ```
 
-Detailed diagrams:
+## 📊 Detailed Architecture Diagrams
 
-- [System Architecture](./diagrams/system-architecture.md)
-- [Queue Processing Flow](./diagrams/queue-processing.md)
-- [AI Orchestration Flow](./diagrams/ai-orchestration.md)
-- [Database Relationships](./diagrams/database-design.md)
+- [🏗️ System Architecture](./diagrams/system-architecture.md)
+- [📦 Queue Processing Flow](./diagrams/queue-processing.md)
+- [🧠 AI Orchestration Flow](./diagrams/ai-orchestration.md)
+- [🗄️ Database Relationships](./diagrams/database-design.md)
 
-## Operational Constraints
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-This architecture assumes realistic constraints:
+# ⚙️ Operational Constraints
 
-- at-least-once webhook delivery (duplicates are expected)
-- provider/API rate limits and variable latency
+This architecture assumes realistic production constraints:
+
+- at-least-once webhook delivery
+- duplicate event retries
+- provider/API rate limits
+- variable AI latency
+- transient infrastructure failures
 - worker crashes and restarts
-- transient infrastructure faults (timeouts, 429s, network errors)
-- bounded queue throughput per worker group
+- bounded queue throughput
 
-Design priorities:
+## 🎯 Design Priorities
 
 - fast ingress acknowledgement
+- retry-safe execution
 - idempotent state transitions
-- bounded retries with dead-letter handoff
+- dead-letter queue isolation
 - explicit failure categorization
-- observability around queue depth, retry rate, and saturation
+- observability-first operations
 
-## Design Trade-offs
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-See [architecture/design-tradeoffs.md](./architecture/design-tradeoffs.md) for details. Key trade-offs:
+# ⚖️ Design Trade-offs
 
-- higher queue latency in exchange for reliability and isolation
-- stricter validation in exchange for fewer downstream failures
-- provider abstraction flexibility in exchange for integration complexity
-- conservative retry caps in exchange for controlled infrastructure spend
+See [architecture/design-tradeoffs.md](./architecture/design-tradeoffs.md)
 
-## Reliability and Failure Handling
+### Key Trade-offs
 
-- [Idempotency Strategy](./docs/idempotency.md)
-- [Rate Limiting Strategy](./docs/rate-limiting.md)
-- [Failure Modes and Mitigations](./docs/failure-modes.md)
+| Trade-off | Benefit | Cost |
+|---|---|---|
+| Queue-driven processing | Reliability & isolation | Higher latency |
+| Provider abstraction | Multi-provider flexibility | Integration complexity |
+| Conservative retry caps | Controlled infrastructure spend | Reduced retry persistence |
+| Strict validation | Fewer downstream failures | Increased processing overhead |
 
-## Implementation Examples
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-Minimal examples with production-inspired behavior:
+# 🛡️ Reliability and Failure Handling
 
-- [Webhook Handler](./examples/webhook-handler.ts): validation, dedupe keying, queue enqueue metadata
-- [Queue Worker](./examples/queue-worker.ts): retriable vs non-retriable classification and dead-letter handoff
-- [Retry Strategy](./examples/retry-strategy.ts): exponential backoff with jitter and retry budget
+## Included Reliability Patterns
 
-## Repository Structure
+- [🔄 Idempotency Strategy](./docs/idempotency.md)
+- [🚦 Rate Limiting Strategy](./docs/rate-limiting.md)
+- [💥 Failure Modes & Mitigations](./docs/failure-modes.md)
+
+### Reliability Focus Areas
+
+- retry-safe workflows
+- dead-letter queue handling
+- bounded retries
+- queue isolation
+- operational resilience
+- provider fallback handling
+- structured error categorization
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
+
+# 🧩 Implementation Examples
+
+Minimal production-inspired examples focused on architecture realism:
+
+| Example | Purpose |
+|---|---|
+| [Webhook Handler](./examples/webhook-handler.ts) | Validation, dedupe, queue publishing |
+| [Queue Worker](./examples/queue-worker.ts) | Worker execution lifecycle & retry classification |
+| [Retry Strategy](./examples/retry-strategy.ts) | Exponential backoff, retry budgets, jitter |
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
+
+# 📂 Repository Structure
 
 ```txt
 architecture/
@@ -173,24 +239,49 @@ diagrams/
 └── database-design.md
 ```
 
-## How to Review This Repo Quickly
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
 
-For interviewers or hiring managers:
+# 🚀 Stack
 
-1. Read this README for system boundaries and constraints.
-2. Review `diagrams/` for end-to-end flow.
-3. Review `architecture/design-tradeoffs.md` for decision quality.
-4. Review `docs/failure-modes.md` and `docs/idempotency.md` for reliability thinking.
-5. Review `examples/` for implementation realism.
+### Backend & Infrastructure
 
-## Stack
-
-- TypeScript / Node.js
+- TypeScript
+- Node.js
 - PostgreSQL
-- Redis + BullMQ
-- OpenAI / Gemini (provider-agnostic orchestration pattern)
-- Structured logs and metrics
+- Redis
+- BullMQ
 
-## License
+### AI & Orchestration
+
+- OpenAI
+- Gemini
+- Provider-agnostic orchestration patterns
+
+### Deployment & Observability
+
+- Fly.io
+- Structured logging
+- Metrics pipelines
+- Queue observability
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
+
+# 👀 How to Review This Repo Quickly
+
+For recruiters, founders, or interviewers:
+
+1. Read the overview and operational constraints
+2. Review architecture diagrams and queue flows
+3. Review design trade-offs and reliability docs
+4. Explore implementation examples
+5. Evaluate systems-thinking and operational maturity
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=2"/>
+
+<p align="center">
+  Built with a systems-first mindset focused on scalability, reliability, and operational resilience.
+</p>
+
+# 📜 License
 
 MIT
