@@ -1,4 +1,10 @@
+<p align="center">
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,100:1E293B&height=220&section=header&text=AI%20Automation%20System%20Design&fontSize=40&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Scalable%20AI-Native%20Architecture%20%7C%20Distributed%20Systems%20%7C%20Queue-Driven%20Infrastructure&descAlignY=60&descSize=18"/>
+</p>
+
 # 🤖 AI Automation System Design
+
+> Production-inspired architecture showcase for scalable AI-native automation systems and distributed SaaS infrastructure.
 
 Scalable AI automation architecture featuring distributed workers, queue-driven processing, webhook ingestion, orchestration workflows, and production-grade SaaS infrastructure patterns.
 
@@ -7,6 +13,24 @@ Scalable AI automation architecture featuring distributed workers, queue-driven 
 # 🧠 Overview
 
 This repository showcases the architecture and engineering patterns behind modern AI-driven automation systems designed for scalability, reliability, and production-grade operations.
+
+<p align="left">
+
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+
+<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Fly.io-8B5CF6?style=for-the-badge&logo=flydotio&logoColor=white" />
+
+</p>
 
 The system focuses on:
 
@@ -62,9 +86,11 @@ E --> L[Observability & Logging]
 # 🚀 Core Engineering Concepts
 
 ## 📦 Queue-Driven Processing
+
 The system uses asynchronous queue workers to process conversations independently and improve scalability under high throughput.
 
-Key benefits:
+### Key Benefits
+
 - Improved reliability
 - Horizontal scalability
 - Failure isolation
@@ -74,6 +100,7 @@ Key benefits:
 ---
 
 ## 🧠 AI Orchestration
+
 AI processing is separated into dedicated orchestration layers responsible for:
 
 - Prompt construction
@@ -86,26 +113,47 @@ AI processing is separated into dedicated orchestration layers responsible for:
 ---
 
 ## 🔄 Idempotency & Retry Safety
+
 Production systems must handle:
-- duplicate webhook deliveries
-- worker restarts
-- retry collisions
-- partial failures
+
+- Duplicate webhook deliveries
+- Worker restarts
+- Retry collisions
+- Partial failures
 
 The architecture uses idempotency patterns to ensure safe retry behavior and predictable state transitions.
 
 ---
 
 ## 📈 Observability
+
 Operational visibility is critical for automation systems.
 
 The architecture includes:
-- structured logging
-- worker monitoring
-- queue metrics
-- failure tracking
-- processing visibility
-- event tracing
+
+- Structured logging
+- Worker monitoring
+- Queue metrics
+- Failure tracking
+- Processing visibility
+- Event tracing
+
+---
+
+# 🔥 Key Engineering Concepts
+
+This repository explores modern backend engineering patterns including:
+
+- Distributed queue orchestration
+- Event-driven architectures
+- Retry-safe workflows
+- AI orchestration systems
+- Webhook ingestion pipelines
+- Worker isolation patterns
+- Observability & monitoring
+- Horizontal scalability
+- Idempotent processing
+- Production-grade SaaS infrastructure
 
 ---
 
@@ -145,10 +193,10 @@ examples/
 └── orchestration-flow.ts
 
 diagrams/
-├── system-architecture.png
-├── queue-flow.png
-├── ai-pipeline.png
-└── database-design.png
+├── system-architecture.md
+├── queue-processing.md
+├── ai-orchestration.md
+└── database-design.md
 ```
 
 ---
@@ -164,6 +212,21 @@ This repository focuses heavily on:
 - Production-grade backend engineering
 - SaaS infrastructure patterns
 - Reliability & operational resilience
+
+---
+
+# 🧩 Engineering Principles
+
+The architecture prioritizes:
+
+- Scalability-first design
+- Queue-driven processing
+- Fault isolation
+- Operational visibility
+- Idempotent workflows
+- Distributed worker systems
+- Production reliability
+- Modular infrastructure patterns
 
 ---
 
