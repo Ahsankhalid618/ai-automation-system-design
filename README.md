@@ -30,12 +30,48 @@ The focus is architecture and systems thinking, not a full application build. Al
 
 ## Quick Navigation
 
+- [Product UI Snapshots (NDA-Safe)](#product-ui-snapshots-nda-safe)
 - [Architecture at a Glance](#architecture-at-a-glance)
 - [Operational Constraints](#operational-constraints)
 - [Design Trade-offs](#design-trade-offs)
 - [Reliability and Failure Handling](#reliability-and-failure-handling)
 - [Implementation Examples](#implementation-examples)
 - [How to Review This Repo Quickly](#how-to-review-this-repo-quickly)
+
+## Product UI Snapshots (NDA-Safe)
+
+These screenshots are included to provide product context for the architecture patterns in this repository.
+All examples are redacted or sanitized to avoid exposing private customer data, internal credentials, or proprietary business metrics.
+
+### 📸 Operational Dashboard Preview
+
+![Autosetter Operational Dashboard](./assets/images/Autosetter-Dashboard.png)
+
+Production-inspired operational control center demonstrating:
+
+- queue monitoring
+- operational budgeting
+- AI workflow orchestration
+- runtime visibility
+- alerting systems
+- automation infrastructure controls
+
+> Sensitive operational data has been intentionally blurred for privacy and NDA-safe public showcasing.
+
+### 📸 Queue & Runtime Monitoring
+
+![Jobs Queue Processing](./assets/images/Jobs-queue-processing.png)
+
+Production-inspired queue orchestration and runtime diagnostics interface for monitoring:
+
+- worker execution
+- retry states
+- failed jobs
+- queue health
+- operational visibility
+- runtime tracing
+
+> Sensitive identifiers and operational data have been intentionally blurred for privacy and NDA-safe public showcasing.
 
 ## Architecture at a Glance
 
