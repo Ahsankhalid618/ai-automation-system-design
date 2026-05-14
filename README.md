@@ -24,6 +24,13 @@ This project is architecture-focused and demonstrates generalized production-ins
 
 # ⚙️ System Architecture
 
+## 📊 Architecture Diagrams
+
+- [🏗️ System Architecture](./diagrams/system-architecture.md)
+- [📦 Queue Processing Flow](./diagrams/queue-processing.md)
+- [🧠 AI Orchestration Flow](./diagrams/ai-orchestration.md)
+- [🗄️ Database Relationships](./diagrams/database-design.md)
+
 ```mermaid
 flowchart TD
 
