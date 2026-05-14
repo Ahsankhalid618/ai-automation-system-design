@@ -1,59 +1,56 @@
-# 🔄 Idempotency Strategy
+# Idempotency Strategy
 
-Reliable automation systems must safely handle duplicate events, retries, and worker restarts.
+Reliable queue-based systems must treat duplicate delivery as a normal operating condition.
 
----
+## Why It Matters
 
-# ⚡ Why Idempotency Matters
+Duplicates can come from:
 
-External platforms may:
-- resend webhook events
-- timeout requests
-- retry failed deliveries
+- webhook retries from upstream providers
+- worker restarts before ack completion
+- manual replay of failed events
 
-Without idempotent processing, systems risk:
-- duplicate messages
-- repeated AI responses
-- inconsistent state transitions
+Without idempotency, duplicates create repeated outbound messages and inconsistent workflow state.
 
----
+## Key Design
 
-# 🧠 Strategy
+Use deterministic idempotency keys at ingress and enforce transition guards in workers.
 
-The architecture uses unique event identifiers to ensure jobs are processed only once.
+Example key format:
 
-Core techniques include:
+```txt
+{platform}:{eventId}
+```
 
-- event deduplication
-- idempotency keys
-- safe retry behavior
-- state transition validation
+Example state transition guard:
 
----
+```txt
+queued -> processing -> delivered
+```
 
-# 📦 Example Workflow
+A transition is accepted only if it moves state forward. Replays that attempt an already-applied transition are treated as no-op.
+
+## Scope Boundaries
+
+Idempotency is enforced at:
+
+1. webhook ingest (dedupe before enqueue)
+2. worker execution (side-effect checkpoints)
+3. outbound delivery write path (prevent duplicate sends)
+
+## Example Flow
 
 ```mermaid
 flowchart LR
-
-A[Incoming Webhook]
---> B[Check Event ID]
-
-B --> C{Already Processed?}
-
-C -->|Yes| D[Ignore Event]
-
-C -->|No| E[Process Job]
+A[Incoming Webhook] --> B[Derive Idempotency Key]
+B --> C{Key Exists?}
+C -->|Yes| D[Return Accepted No-op]
+C -->|No| E[Enqueue Job + Record Key]
+E --> F[Worker Executes with Transition Guard]
 ```
 
----
+## Operational Notes
 
-# 🚀 Reliability Benefits
-
-This approach improves:
-
-- retry safety
-- state consistency
-- operational reliability
-- failure recovery
-- distributed worker coordination
+- idempotency keys should have a bounded retention window
+- dedupe hit rate should be tracked as an operational signal
+- false positives (bad key design) are as harmful as false negatives

@@ -1,177 +1,116 @@
-<p align="center">
-  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,100:1E293B&height=220&section=header&text=AI%20Automation%20System%20Design&fontSize=40&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Scalable%20AI-Native%20Architecture%20%7C%20Distributed%20Systems%20%7C%20Queue-Driven%20Infrastructure&descAlignY=60&descSize=18"/>
-</p>
+# AI Automation System Design
 
-# 🤖 AI Automation System Design
+![AI Automation System Design Banner](https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,100:1E293B&height=220&section=header&text=AI%20Automation%20System%20Design&fontSize=38&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Queue-Driven%20AI%20Infrastructure%20%7C%20Distributed%20Systems%20Thinking%20%7C%20Reliability%20Patterns&descAlignY=62&descSize=16)
 
-> Production-inspired architecture showcase for scalable AI-native automation systems and distributed SaaS infrastructure.
+Production-inspired architecture showcase for queue-driven AI automation systems.
 
-Scalable AI automation architecture featuring distributed workers, queue-driven processing, webhook ingestion, orchestration workflows, and production-grade SaaS infrastructure patterns.
+![Architecture Showcase](https://img.shields.io/badge/Architecture-Showcase-0F172A?style=for-the-badge)
+![Focus Distributed Systems](https://img.shields.io/badge/Focus-Distributed%20Systems-1E293B?style=for-the-badge)
+![Pattern Queue Driven](https://img.shields.io/badge/Pattern-Queue%20Driven-334155?style=for-the-badge)
+![Reliability Idempotent Retries](https://img.shields.io/badge/Reliability-Idempotent%20Retries-475569?style=for-the-badge)
 
----
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![BullMQ](https://img.shields.io/badge/BullMQ-EA580C?style=flat-square)
+![OpenAI and Gemini](https://img.shields.io/badge/OpenAI%20%7C%20Gemini-AI%20Providers-111827?style=flat-square)
 
-# 🧠 Overview
+## Overview
 
-This repository showcases the architecture and engineering patterns behind modern AI-driven automation systems designed for scalability, reliability, and production-grade operations.
+This repository demonstrates how to design reliable AI-enabled backend workflows with:
 
-<p align="left">
+- webhook ingestion and normalization
+- idempotent queue processing
+- retry-safe worker orchestration
+- provider-agnostic AI execution
+- operational observability and failure handling
 
-<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+The focus is architecture and systems thinking, not a full application build. All patterns are generalized and NDA-safe.
 
-<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+## Quick Navigation
 
-<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+- [Architecture at a Glance](#architecture-at-a-glance)
+- [Operational Constraints](#operational-constraints)
+- [Design Trade-offs](#design-trade-offs)
+- [Reliability and Failure Handling](#reliability-and-failure-handling)
+- [Implementation Examples](#implementation-examples)
+- [How to Review This Repo Quickly](#how-to-review-this-repo-quickly)
 
-<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+## Architecture at a Glance
 
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+Core flow:
 
-<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
-
-<img src="https://img.shields.io/badge/Fly.io-8B5CF6?style=for-the-badge&logo=flydotio&logoColor=white" />
-
-</p>
-
-The system focuses on:
-
-- Distributed queue & worker orchestration
-- AI response pipelines
-- Webhook ingestion architecture
-- Retry & idempotency strategies
-- Multi-step automation workflows
-- Observability & operational reliability
-- Event-driven backend systems
-
-This project is architecture-focused and demonstrates generalized production-inspired patterns without exposing proprietary business logic or private client systems.
-
----
-
-# ⚙️ System Architecture
-
-## 📊 Architecture Diagrams
-
-- [🏗️ System Architecture](./diagrams/system-architecture.md)
-- [📦 Queue Processing Flow](./diagrams/queue-processing.md)
-- [🧠 AI Orchestration Flow](./diagrams/ai-orchestration.md)
-- [🗄️ Database Relationships](./diagrams/database-design.md)
+1. Ingest webhook events and acknowledge quickly.
+2. Validate and deduplicate by idempotency key.
+3. Enqueue normalized jobs for async processing.
+4. Process with worker concurrency limits and retry policy.
+5. Route through AI orchestration and response validation.
+6. Deliver results and persist state transitions.
+7. Emit structured telemetry for queue, worker, and provider behavior.
 
 ```mermaid
 flowchart TD
-
-A[External Platform Webhooks] --> B[Webhook Ingestion Layer]
-
-B --> C[Validation & Deduplication]
-
-C --> D[Queue System - BullMQ / Redis]
-
-D --> E[Conversation Worker]
-
-E --> F[AI Orchestration Layer]
-
-F --> G[Prompt Processing]
-
-G --> H[AI Provider]
-
-H --> I[Response Processing]
-
-I --> J[Delivery Service]
-
-J --> K[External Messaging Platform]
-
-E --> L[Observability & Logging]
+A[External Webhooks] --> B[Ingress API]
+B --> C[Validation + Idempotency Check]
+C --> D[Queue - BullMQ / Redis]
+D --> E[Worker Pool]
+E --> F[AI Orchestrator]
+F --> G[Provider Call]
+G --> H[Response Validation]
+H --> I[Delivery + Persistence]
+E --> J[Metrics + Logs]
 ```
 
----
+Detailed diagrams:
 
-# 🚀 Core Engineering Concepts
+- [System Architecture](./diagrams/system-architecture.md)
+- [Queue Processing Flow](./diagrams/queue-processing.md)
+- [AI Orchestration Flow](./diagrams/ai-orchestration.md)
+- [Database Relationships](./diagrams/database-design.md)
 
-## 📦 Queue-Driven Processing
+## Operational Constraints
 
-The system uses asynchronous queue workers to process conversations independently and improve scalability under high throughput.
+This architecture assumes realistic constraints:
 
-### Key Benefits
+- at-least-once webhook delivery (duplicates are expected)
+- provider/API rate limits and variable latency
+- worker crashes and restarts
+- transient infrastructure faults (timeouts, 429s, network errors)
+- bounded queue throughput per worker group
 
-- Improved reliability
-- Horizontal scalability
-- Failure isolation
-- Retry handling
-- Rate limiting support
+Design priorities:
 
----
+- fast ingress acknowledgement
+- idempotent state transitions
+- bounded retries with dead-letter handoff
+- explicit failure categorization
+- observability around queue depth, retry rate, and saturation
 
-## 🧠 AI Orchestration
+## Design Trade-offs
 
-AI processing is separated into dedicated orchestration layers responsible for:
+See [architecture/design-tradeoffs.md](./architecture/design-tradeoffs.md) for details. Key trade-offs:
 
-- Prompt construction
-- Context management
-- Conversation state handling
-- Provider routing
-- Response validation
-- Fallback strategies
+- higher queue latency in exchange for reliability and isolation
+- stricter validation in exchange for fewer downstream failures
+- provider abstraction flexibility in exchange for integration complexity
+- conservative retry caps in exchange for controlled infrastructure spend
 
----
+## Reliability and Failure Handling
 
-## 🔄 Idempotency & Retry Safety
+- [Idempotency Strategy](./docs/idempotency.md)
+- [Rate Limiting Strategy](./docs/rate-limiting.md)
+- [Failure Modes and Mitigations](./docs/failure-modes.md)
 
-Production systems must handle:
+## Implementation Examples
 
-- Duplicate webhook deliveries
-- Worker restarts
-- Retry collisions
-- Partial failures
+Minimal examples with production-inspired behavior:
 
-The architecture uses idempotency patterns to ensure safe retry behavior and predictable state transitions.
+- [Webhook Handler](./examples/webhook-handler.ts): validation, dedupe keying, queue enqueue metadata
+- [Queue Worker](./examples/queue-worker.ts): retriable vs non-retriable classification and dead-letter handoff
+- [Retry Strategy](./examples/retry-strategy.ts): exponential backoff with jitter and retry budget
 
----
-
-## 📈 Observability
-
-Operational visibility is critical for automation systems.
-
-The architecture includes:
-
-- Structured logging
-- Worker monitoring
-- Queue metrics
-- Failure tracking
-- Processing visibility
-- Event tracing
-
----
-
-# 🔥 Key Engineering Concepts
-
-This repository explores modern backend engineering patterns including:
-
-- Distributed queue orchestration
-- Event-driven architectures
-- Retry-safe workflows
-- AI orchestration systems
-- Webhook ingestion pipelines
-- Worker isolation patterns
-- Observability & monitoring
-- Horizontal scalability
-- Idempotent processing
-- Production-grade SaaS infrastructure
-
----
-
-# 🏗️ Infrastructure Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js |
-| Backend | Node.js + TypeScript |
-| Database | PostgreSQL |
-| Queue System | BullMQ + Redis |
-| AI Providers | OpenAI / Gemini |
-| Deployment | Fly.io |
-| Observability | Structured Logging & Metrics |
-
----
-
-# 📂 Repository Structure
+## Repository Structure
 
 ```txt
 architecture/
@@ -179,18 +118,17 @@ architecture/
 ├── queue-processing.md
 ├── ai-orchestration.md
 ├── observability.md
-└── scaling-patterns.md
+└── design-tradeoffs.md
 
 docs/
-├── deployment.md
+├── idempotency.md
 ├── rate-limiting.md
-└── idempotency.md
+└── failure-modes.md
 
 examples/
 ├── webhook-handler.ts
 ├── queue-worker.ts
-├── retry-strategy.ts
-└── orchestration-flow.ts
+└── retry-strategy.ts
 
 diagrams/
 ├── system-architecture.md
@@ -199,57 +137,24 @@ diagrams/
 └── database-design.md
 ```
 
----
+## How to Review This Repo Quickly
 
-# ⚡ Engineering Focus Areas
+For interviewers or hiring managers:
 
-This repository focuses heavily on:
+1. Read this README for system boundaries and constraints.
+2. Review `diagrams/` for end-to-end flow.
+3. Review `architecture/design-tradeoffs.md` for decision quality.
+4. Review `docs/failure-modes.md` and `docs/idempotency.md` for reliability thinking.
+5. Review `examples/` for implementation realism.
 
-- Distributed systems thinking
-- Scalable queue orchestration
-- Event-driven architectures
-- AI workflow management
-- Production-grade backend engineering
-- SaaS infrastructure patterns
-- Reliability & operational resilience
+## Stack
 
----
+- TypeScript / Node.js
+- PostgreSQL
+- Redis + BullMQ
+- OpenAI / Gemini (provider-agnostic orchestration pattern)
+- Structured logs and metrics
 
-# 🧩 Engineering Principles
-
-The architecture prioritizes:
-
-- Scalability-first design
-- Queue-driven processing
-- Fault isolation
-- Operational visibility
-- Idempotent workflows
-- Distributed worker systems
-- Production reliability
-- Modular infrastructure patterns
-
----
-
-# 🔮 Future Improvements
-
-Potential future areas include:
-
-- Multi-provider AI routing
-- Distributed tracing
-- Advanced caching layers
-- Multi-tenant orchestration
-- Agent-based workflow systems
-- Real-time monitoring dashboards
-- AI workflow simulation environments
-
----
-
-# 🤝 Contributions
-
-This repository is intended as an architecture showcase and engineering reference for scalable AI-native backend systems and automation platforms.
-
----
-
-# 📜 License
+## License
 
 MIT

@@ -6,21 +6,31 @@ flowchart LR
 A[Webhook Received]
 --> B[Validation]
 
-B --> C[Job Creation]
+B --> C[Deduplication Check]
 
-C --> D[Redis Queue]
+C --> D[Job Creation]
 
-D --> E[Conversation Worker]
+D --> E[Redis Queue]
 
-E --> F[AI Processing]
+E --> F[Worker Concurrency Gate]
 
-F --> G[Response Generation]
+F --> G[Conversation Worker]
 
-G --> H[Delivery Service]
+G --> H[Provider Rate Limit Check]
 
-E --> I[Retry Logic]
+H --> I[AI Processing]
 
-I --> D
+I --> J[Response Generation]
 
-E --> J[Structured Logging]
+J --> K[Delivery Service]
+
+G --> L[Retry Logic]
+
+L --> E
+
+L --> M{Retry Budget Exhausted?}
+
+M -->|Yes| N[Dead Letter Queue]
+
+G --> O[Structured Logging]
 ```

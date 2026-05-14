@@ -1,54 +1,42 @@
-# 🚦 Rate Limiting Strategy
+# Rate Limiting Strategy
 
-AI automation systems must control request throughput to maintain stability and provider reliability.
+Rate limiting is applied at multiple boundaries to protect both internal workers and external providers.
 
----
+## Control Points
 
-# ⚡ Goals
+1. **Ingress control:** smooth bursty webhook traffic before queue amplification.
+2. **Worker concurrency:** cap active jobs per worker group.
+3. **Provider calls:** enforce provider-specific limits and retry windows.
 
-The rate-limiting layer protects:
+## Practical Policy Model
 
-- AI providers
-- external APIs
-- worker systems
-- queue infrastructure
+- queue-level max concurrency per job type
+- provider token/request budget per time window
+- per-tenant fairness caps where relevant
+- backoff + jitter after `429`/transient failures
 
----
-
-# 🧠 Core Strategies
-
-The architecture supports:
-
-- queue throttling
-- concurrency caps
-- per-tenant limits
-- retry delays
-- provider-specific limits
-
----
-
-# 📈 Benefits
-
-Rate limiting improves:
-
-- operational stability
-- predictable throughput
-- provider reliability
-- infrastructure resilience
-
----
-
-# 🔄 Example Flow
+## Example Execution Path
 
 ```mermaid
 flowchart TD
-
-A[Queue Job]
---> B[Rate Limit Check]
-
-B --> C{Allowed?}
-
-C -->|Yes| D[Process Job]
-
-C -->|No| E[Delay / Retry]
+A[Queued Job] --> B[Worker Concurrency Check]
+B --> C{Capacity Available?}
+C -->|No| D[Requeue with Delay]
+C -->|Yes| E[Provider Rate Check]
+E --> F{Allowed?}
+F -->|No| D
+F -->|Yes| G[Process Job]
 ```
+
+## Operational Constraints
+
+- limits should be explicit, versioned, and observable
+- default behavior under saturation should be predictable (delay, shed, or dead-letter)
+- throughput targets must be evaluated against provider quotas, not only CPU availability
+
+## Metrics to Watch
+
+- jobs delayed by rate limit
+- provider `429` ratio
+- queue age under throttling
+- worker saturation against configured caps
